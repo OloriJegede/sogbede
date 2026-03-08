@@ -38,16 +38,18 @@ const AppFooter = () => {
               <div className="text-[24px] montserrat-semibold">Quick Links</div>
               <div className="space-y-5 text-[#FAF7F3]">
                 <div>
-                  <Link href={`/`}>Apply Now</Link>
+                  <Link href={`/appy`}>Apply Now</Link>
                 </div>
                 <div>
-                  <Link href={`/`}>FAQ</Link>
+                  <Link href={`/#faq`}>FAQ</Link>
                 </div>
                 <div>
-                  <Link href={`/`}>Filming Consent Agreement</Link>
+                  <Link href={`/filming-consent-agreement`}>
+                    Filming Consent Agreement
+                  </Link>
                 </div>
                 <div>
-                  <Link href={`/`}>Terms & Conditions</Link>
+                  <Link href={`/terms-and-condition`}>Terms & Conditions</Link>
                 </div>
               </div>
             </div>

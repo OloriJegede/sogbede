@@ -21,7 +21,7 @@ const page = () => {
       <Stat />
       <GuestSay />
       <div className="md:bg-[#F2EDE7]">
-        <div className="faq-bg">
+        <div id="faq" className="faq-bg">
           <Faq />
           <ContactUs />
         </div>

@@ -18,7 +18,7 @@ const SlideTwo = () => {
       <div>
         <Button className="px-8 bg-[#CCAB8C]">Apply Now</Button>
       </div>
-      <div className="flex justify-center items-center pt-2 w-full">
+      <div className="flex justify-center md:mt-4 items-center pt-2 w-full">
         <Image
           src={`/slide2.png`}
           width={1154}

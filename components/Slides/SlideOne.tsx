@@ -14,7 +14,7 @@ const SlideOne = () => {
         <Button className="px-8 w-[138px] w-auto">Explore ṢoGbédè</Button>
       </div>
       {/* Bottom image */}
-      <div className="w-full md:-mt-16">
+      <div className="w-full ">
         <Image
           src={`/5hero1.png`}
           width={1154}

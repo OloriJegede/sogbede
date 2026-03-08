@@ -18,16 +18,9 @@ const SlideThree = () => {
       <div>
         <Button className="px-8 bg-[#1C1A1A]">Watch on Youtube</Button>
       </div>
-      <div className="flex justify-center items-center mt-5 md:-mt-18">
+      <div className="flex justify-center items-center mt-5 md:-mt-12">
         <Image
           src={`/slide3.png`}
-          width={853}
-          height={563}
-          alt="hero image"
-          className="hidden md:block"
-        />
-        <Image
-          src={`/SlideThree-mobile.png`}
           width={853}
           height={563}
           alt="hero image"

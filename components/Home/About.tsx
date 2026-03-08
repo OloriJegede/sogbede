@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 
 const About = () => {
   return (
-    <div className="home-about-back">
+    <div id="about" className="home-about-back">
       <section className="max-w-7xl mx-auto py-20 px-6 md:px-0">
         <div className="text-[48px] text-[#FAFAFA] skranji md:text-center">
           About Us
