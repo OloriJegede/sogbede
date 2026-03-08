@@ -1,0 +1,72 @@
+# ─── Netlify Configuration ────────────────────────────────────────────────────
+
+[build]
+  command       = "npx prisma generate && next build"
+  publish       = ".next"
+
+[build.environment]
+  NODE_VERSION  = "20"
+  NPM_FLAGS     = "--legacy-peer-deps"
+
+# ─── Next.js Runtime Plugin ───────────────────────────────────────────────────
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# ─── Dev Server ───────────────────────────────────────────────────────────────
+
+[dev]
+  command   = "next dev"
+  port      = 3000
+  targetPort = 3000
+  framework = "#custom"
+
+# ─── Production Environment Variables ────────────────────────────────────────
+
+[context.production.environment]
+  # App
+  NEXT_PUBLIC_APP_URL   = "https://sogbede.com"
+
+  # Auth
+  JWT_SECRET            = "sogbede-admin-jwt-secret-change-in-production"
+
+  # Database proxy (Namecheap PHP proxy)
+  DB_PROXY_URL          = "https://sogbede.com/db-proxy.php"
+  DB_PROXY_KEY          = "SOGBEDE_DB_PROXY_KEY_2026"
+
+  # Prisma / MySQL (used by prisma generate at build time)
+  DATABASE_URL          = "mysql://sogbgtlg_george:kjmfG0qSQXKPjjJ@premium267.web-hosting.com:3306/sogbgtlg_sogbede"
+
+  # Resend (transactional email)
+  RESEND_API_KEY        = "re_fjEDyNkp_Cuwvmf1woud9Rhv2Cj2P5K6p"
+  RESEND_FROM_EMAIL     = "ṢOGBÉDÈ Casting Team <casting@sogbede.com>"
+
+  # DigitalOcean Spaces (file storage / uploads)
+  DO_SPACES_ENDPOINT    = "https://nyc3.digitaloceanspaces.com"
+  DO_SPACES_REGION      = "nyc3"
+  DO_SPACES_KEY         = "DO008YH2UAB2HLQNXWYJ"
+  DO_SPACES_SECRET      = "vgHJq2wskUw7KMP2B1Wb5wp0Muq+0ugiODa4qb0jPFU"
+  DO_SPACES_BUCKET      = "sogbedeappmedia"
+  DO_SPACES_CDN         = "https://sogbedeappmedia.nyc3.cdn.digitaloceanspaces.com"
+
+# ─── Deploy Preview / Branch Deploy Environment ───────────────────────────────
+
+[context.deploy-preview.environment]
+  NEXT_PUBLIC_APP_URL   = "https://sogbede.com"
+
+[context.branch-deploy.environment]
+  NEXT_PUBLIC_APP_URL   = "https://sogbede.com"
+
+# ─── Headers ──────────────────────────────────────────────────────────────────
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
