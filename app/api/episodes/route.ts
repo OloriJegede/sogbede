@@ -103,3 +103,32 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const admin = await getAdminFromCookies();
+    if (!admin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await request.json();
+    if (!id) {
+      return NextResponse.json(
+        { error: "Episode id is required" },
+        { status: 400 },
+      );
+    }
+
+    // Remove all members first, then delete episode
+    await db.episodeMember.deleteMany({ where: { episodeId: Number(id) } });
+    await db.episode.delete({ where: { id: Number(id) } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Delete episode error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete episode" },
+      { status: 500 },
+    );
+  }
+}

@@ -5,6 +5,7 @@ import { Search, ChevronDown, ChevronUp, Loader2, X, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -90,6 +91,7 @@ export default function ApplicationsClient({
     null,
   );
   const [currentPage, setCurrentPage] = useState(1);
+  const [mediaDialogUrl, setMediaDialogUrl] = useState<string | null>(null);
 
   const totalItems = applications.length;
   const paginatedApplications = applications.slice(
@@ -325,15 +327,6 @@ export default function ApplicationsClient({
                     Filming Date
                   </TableHead>
                   <TableHead className="text-[12px] font-semibold text-[#615552]">
-                    Consent
-                  </TableHead>
-                  <TableHead className="text-[12px] font-semibold text-[#615552]">
-                    Completeness
-                  </TableHead>
-                  <TableHead className="text-[12px] font-semibold text-[#615552]">
-                    Status
-                  </TableHead>
-                  <TableHead className="text-[12px] font-semibold text-[#615552]">
                     Details
                   </TableHead>
                 </TableRow>
@@ -341,6 +334,7 @@ export default function ApplicationsClient({
               <TableBody>
                 {paginatedApplications.map((app) => {
                   const completeness = getCompleteness(app);
+                  void completeness; // retained for potential reuse
                   return (
                     <React.Fragment key={app.id}>
                       <TableRow
@@ -358,7 +352,11 @@ export default function ApplicationsClient({
                             <img
                               src={app.mediaUrl}
                               alt={`${app.firstName} ${app.lastName}`}
-                              className="w-9 h-9 rounded-full object-cover"
+                              className="w-9 h-9 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-[#3A2B27]"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setMediaDialogUrl(app.mediaUrl!);
+                              }}
                             />
                           ) : (
                             <div className="w-9 h-9 rounded-full bg-[#3A2B27] flex items-center justify-center text-white text-xs font-semibold">
@@ -387,49 +385,6 @@ export default function ApplicationsClient({
                             : "Not set"}
                         </TableCell>
                         <TableCell>
-                          <span
-                            className={`px-2 py-1 rounded text-[12px] ${
-                              app.consentRecord
-                                ? "bg-green-100 text-green-700"
-                                : app.consentRequest?.status === "pending"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : "bg-gray-100 text-gray-500"
-                            }`}
-                          >
-                            {app.consentRecord
-                              ? "Signed"
-                              : app.consentRequest?.status === "pending"
-                                ? "Pending"
-                                : "None"}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <div className="w-16 bg-[#ECE8E4] rounded-full h-2">
-                              <div
-                                className="bg-[#3A2B27] h-2 rounded-full"
-                                style={{ width: `${completeness}%` }}
-                              ></div>
-                            </div>
-                            <span className="text-[12px] text-[#615552]">
-                              {completeness}%
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className={`px-2 py-1 rounded text-[12px] capitalize ${
-                              app.status === "approved"
-                                ? "bg-green-100 text-green-700"
-                                : app.status === "rejected"
-                                  ? "bg-red-100 text-red-700"
-                                  : "bg-yellow-100 text-yellow-700"
-                            }`}
-                          >
-                            {app.status}
-                          </span>
-                        </TableCell>
-                        <TableCell>
                           {expandedId === app.id ? (
                             <ChevronUp className="w-4 h-4 text-[#3A2B27]" />
                           ) : (
@@ -439,7 +394,7 @@ export default function ApplicationsClient({
                       </TableRow>
                       {expandedId === app.id && (
                         <TableRow>
-                          <TableCell colSpan={11} className="bg-[#FAF9F8] p-4">
+                          <TableCell colSpan={8} className="bg-[#FAF9F8] p-4">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                               {app.occupation && (
                                 <div>
@@ -577,7 +532,7 @@ export default function ApplicationsClient({
                 {applications.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={11}
+                      colSpan={8}
                       className="text-center text-[14px] text-[#615552] py-8"
                     >
                       No applications found.
@@ -599,6 +554,23 @@ export default function ApplicationsClient({
           noun="application"
         />
       </div>
+
+      {/* Media preview dialog */}
+      <Dialog
+        open={!!mediaDialogUrl}
+        onOpenChange={(o) => !o && setMediaDialogUrl(null)}
+      >
+        <DialogContent className="max-w-xl p-2 bg-black">
+          {mediaDialogUrl && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={mediaDialogUrl}
+              alt="Media preview"
+              className="w-full h-auto rounded max-h-[80vh] object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

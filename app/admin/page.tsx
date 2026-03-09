@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { FileText, CheckCircle, XCircle, Clock } from "lucide-react";
+import { FileText, Clock, CalendarDays, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,12 +16,21 @@ import { db } from "@/lib/db";
 import Link from "next/link";
 
 export default async function DashboardPage() {
-  const [totalCount, pendingCount, approvedCount, rejectedCount, recentApps] =
+  const now = new Date();
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+  const startOfWeek = new Date(startOfToday);
+  startOfWeek.setDate(startOfToday.getDate() - startOfToday.getDay());
+
+  const [totalCount, pendingCount, todayCount, thisWeekCount, recentApps] =
     await Promise.all([
       db.application.count(),
       db.application.count({ where: { status: "pending" } }),
-      db.application.count({ where: { status: "approved" } }),
-      db.application.count({ where: { status: "rejected" } }),
+      db.application.count({ where: { createdAt: { gte: startOfToday } } }),
+      db.application.count({ where: { createdAt: { gte: startOfWeek } } }),
       db.application.findMany({
         take: 5,
         orderBy: { createdAt: "desc" },
@@ -51,16 +60,16 @@ export default async function DashboardPage() {
       color: "text-yellow-600",
     },
     {
-      title: "Approved",
-      value: approvedCount.toString(),
-      icon: CheckCircle,
+      title: "Applied Today",
+      value: todayCount.toString(),
+      icon: CalendarDays,
       color: "text-green-600",
     },
     {
-      title: "Rejected",
-      value: rejectedCount.toString(),
-      icon: XCircle,
-      color: "text-red-600",
+      title: "Applied This Week",
+      value: thisWeekCount.toString(),
+      icon: TrendingUp,
+      color: "text-purple-600",
     },
   ];
 

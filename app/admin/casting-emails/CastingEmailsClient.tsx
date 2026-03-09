@@ -32,6 +32,16 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import TablePagination from "@/components/ui/table-pagination";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const PAGE_SIZE = 10;
 
@@ -181,6 +191,7 @@ export default function CastingEmailsClient({
   const [previewHtml, setPreviewHtml] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [sending, setSending] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [result, setResult] = useState<{
     type: "success" | "error";
     msg: string;
@@ -730,7 +741,25 @@ export default function CastingEmailsClient({
                 </Button>
                 <Button
                   className="bg-[#3A2B27] text-white h-[42px]"
-                  onClick={handleSend}
+                  onClick={() => {
+                    const totalRecipients =
+                      selectedIds.length + manualRecipients.length;
+                    if (totalRecipients === 0) {
+                      setResult({
+                        type: "error",
+                        msg: "Select at least one recipient or add a manual recipient.",
+                      });
+                      return;
+                    }
+                    if (!shootDate || !arrivalTime || !studio) {
+                      setResult({
+                        type: "error",
+                        msg: "Shoot date, arrival time, and studio are required.",
+                      });
+                      return;
+                    }
+                    setShowConfirm(true);
+                  }}
                   disabled={sending}
                 >
                   {sending ? (
@@ -1078,6 +1107,34 @@ export default function CastingEmailsClient({
           />
         </>
       )}
+
+      {/* Send confirmation dialog */}
+      <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Send casting emails?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are about to send emails to{" "}
+              <strong>{selectedIds.length + manualRecipients.length}</strong>{" "}
+              recipient
+              {selectedIds.length + manualRecipients.length !== 1 ? "s" : ""}.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-[#3A2B27] text-white hover:bg-[#4e3a34]"
+              onClick={() => {
+                setShowConfirm(false);
+                handleSend();
+              }}
+            >
+              Yes, send now
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
   Loader2,
   Search,
   Download,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,16 @@ import {
 import CreateEpisodeDialog from "./CreateEpisodeDialog";
 import AddContestantDialog from "./AddContestantDialog";
 import TablePagination from "@/components/ui/table-pagination";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const PAGE_SIZE = 10;
 
@@ -74,6 +85,8 @@ export default function FilmingDatesClient({ calendarDates, episodes }: Props) {
   );
   const [updatingEpisode, setUpdatingEpisode] = useState<number | null>(null);
   const [removingMember, setRemovingMember] = useState<number | null>(null);
+  const [deletingEpisode, setDeletingEpisode] = useState<number | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
   const [calendarSearch, setCalendarSearch] = useState("");
   const [episodeSearch, setEpisodeSearch] = useState("");
   const [calendarPage, setCalendarPage] = useState(1);
@@ -180,6 +193,22 @@ export default function FilmingDatesClient({ calendarDates, episodes }: Props) {
       // silent
     } finally {
       setRemovingMember(null);
+    }
+  };
+
+  const deleteEpisode = async (episodeId: number) => {
+    setDeletingEpisode(episodeId);
+    try {
+      await fetch("/api/episodes", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: episodeId }),
+      });
+      router.refresh();
+    } catch {
+      // silent
+    } finally {
+      setDeletingEpisode(null);
     }
   };
 
@@ -443,9 +472,23 @@ export default function FilmingDatesClient({ calendarDates, episodes }: Props) {
                       <CardTitle className="text-[16px] font-semibold">
                         Episode {ep.episodeNumber ?? "—"}
                       </CardTitle>
-                      <span className="text-[13px] font-medium opacity-80">
-                        {memberCount}/4
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[13px] font-medium opacity-80">
+                          {memberCount}/4
+                        </span>
+                        <button
+                          onClick={() => setConfirmDeleteId(ep.id)}
+                          disabled={deletingEpisode === ep.id}
+                          className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/20 transition-colors"
+                          title="Delete episode"
+                        >
+                          {deletingEpisode === ep.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </CardHeader>
 
@@ -599,6 +642,36 @@ export default function FilmingDatesClient({ calendarDates, episodes }: Props) {
           />
         </>
       )}
+
+      {/* Delete episode confirmation */}
+      <AlertDialog
+        open={confirmDeleteId !== null}
+        onOpenChange={(o) => !o && setConfirmDeleteId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this episode?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the episode and remove all its
+              contestants. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 text-white hover:bg-red-700"
+              onClick={() => {
+                if (confirmDeleteId !== null) {
+                  deleteEpisode(confirmDeleteId);
+                  setConfirmDeleteId(null);
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
