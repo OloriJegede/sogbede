@@ -10,7 +10,6 @@ interface PageProps {
 
 export default async function ApplicantsPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const status = typeof params.status === "string" ? params.status : undefined;
   const partner =
     typeof params.partner === "string" ? params.partner : undefined;
   const search = typeof params.search === "string" ? params.search : undefined;
@@ -18,10 +17,6 @@ export default async function ApplicantsPage({ searchParams }: PageProps) {
     typeof params.category === "string" ? params.category : undefined;
 
   const where: Record<string, unknown> = {};
-
-  if (status && status !== "all") {
-    where.status = status;
-  }
 
   if (partner === "yes") {
     where.partnerFirstName = { not: null };
@@ -73,7 +68,6 @@ export default async function ApplicantsPage({ searchParams }: PageProps) {
       applicants={JSON.parse(JSON.stringify(applicants))}
       allCategories={JSON.parse(JSON.stringify(allCategories))}
       categoryCounts={categoryCounts}
-      currentStatus={status || "all"}
       currentPartner={partner || "all"}
       currentSearch={search || ""}
       currentCategory={category || "all"}

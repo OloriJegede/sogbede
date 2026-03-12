@@ -1,20 +1,24 @@
 import React from "react";
-import { Bell, Search, User } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
+
+const routeNames: Record<string, string> = {
+  "/admin": "Dashboard",
+  "/admin/filming-dates": "Episode Planner",
+  "/admin/casting-emails": "Casting Emails",
+  "/admin/settings": "Settings",
+};
 
 const TopBar = ({ adminName }: { adminName?: string }) => {
+  const pathname = usePathname();
+  const routeName = routeNames[pathname] || "Admin";
+
   return (
     <div className="h-16 bg-white border-b border-[#ECE8E4] px-6 flex items-center justify-between">
-      <div className="flex items-center flex-1 max-w-md">
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#777676] w-4 h-4" />
-          <Input
-            placeholder="Search..."
-            className="pl-10 bg-[#FAF9F8] border-[#ECE8E4] h-[42px]"
-          />
-        </div>
-      </div>
+      <h2 className="text-[20px] text-[#1C1A1A] montserrat-semibold">
+        {routeName}
+      </h2>
 
       <div className="flex items-center space-x-4">
         <Button variant="ghost" size="icon" className="relative">

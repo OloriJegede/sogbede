@@ -22,6 +22,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -73,6 +80,23 @@ interface EmailHistoryEntry {
   application: { firstName: string; lastName: string } | null;
 }
 
+interface ComposeApp {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  categories: {
+    category: { id: number; categoryName: string; categorySlug: string };
+  }[];
+}
+
+interface CategoryOption {
+  id: number;
+  categoryName: string;
+  colorCode: string | null;
+  categorySlug: string | null;
+}
+
 interface ManualRecipient {
   name: string;
   email: string;
@@ -80,8 +104,37 @@ interface ManualRecipient {
 
 interface Props {
   recipients: Recipient[];
+  allApplications: ComposeApp[];
+  allCategories: CategoryOption[];
   emailHistory: EmailHistoryEntry[];
 }
+
+// ============================================================
+// Templates for Compose
+// ============================================================
+
+const composeTemplates = [
+  {
+    key: "applicationReceived",
+    title: "Application Received",
+    desc: "Confirm application submission",
+  },
+  {
+    key: "applicationApproved",
+    title: "Application Approved",
+    desc: "Notify applicant of approval",
+  },
+  {
+    key: "applicationRejected",
+    title: "Application Rejected",
+    desc: "Politely decline application",
+  },
+  {
+    key: "filmingReminder",
+    title: "Filming Day Reminder",
+    desc: "Remind about upcoming filming day",
+  },
+];
 
 // ============================================================
 // Skeleton Loaders
@@ -145,13 +198,15 @@ function SkeletonRecipientList() {
 
 export default function CastingEmailsClient({
   recipients,
+  allApplications,
+  allCategories,
   emailHistory,
 }: Props) {
   const router = useRouter();
 
   // Tab state
   const [activeTab, setActiveTab] = useState<
-    "setup" | "recipients" | "history"
+    "setup" | "compose" | "recipients" | "history"
   >("setup");
   const [loading, setLoading] = useState(false);
 
@@ -168,11 +223,20 @@ export default function CastingEmailsClient({
   const [greeting, setGreeting] = useState("Ẹ kú u dédé lwóyì o");
   const [senderName, setSenderName] = useState("");
   const [closingSignature, setClosingSignature] = useState(
-    "Ẹ ṣeun lójúlọ́jú,\nThe ṢoGbédè Team",
+    "Ẹ ṣeun lọ́pọ̀lọpọ̀,\nThe ṢoGbédè Team",
   );
 
-  // Recipients
+  // Recipients for casting invite
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  // Compose tab state
+  const [composeSelectedIds, setComposeSelectedIds] = useState<number[]>([]);
+  const [composeCategoryFilter, setComposeCategoryFilter] = useState("all");
+  const [composeTemplateType, setComposeTemplateType] = useState("");
+  const [composeSubject, setComposeSubject] = useState("");
+  const [composeMessage, setComposeMessage] = useState("");
+  const [composeSending, setComposeSending] = useState(false);
+  const [composeSearch, setComposeSearch] = useState("");
   const [manualRecipients, setManualRecipients] = useState<ManualRecipient[]>(
     [],
   );
@@ -252,6 +316,41 @@ export default function CastingEmailsClient({
   };
 
   const clearSelection = () => setSelectedIds([]);
+
+  // Compose tab filtered apps
+  const filteredComposeApps = (() => {
+    let list = allApplications;
+    if (composeCategoryFilter && composeCategoryFilter !== "all") {
+      list = list.filter((a) =>
+        a.categories.some(
+          (c) => String(c.category.id) === composeCategoryFilter,
+        ),
+      );
+    }
+    if (composeSearch) {
+      const q = composeSearch.toLowerCase();
+      list = list.filter(
+        (a) =>
+          `${a.firstName} ${a.lastName}`.toLowerCase().includes(q) ||
+          a.email.toLowerCase().includes(q),
+      );
+    }
+    return list;
+  })();
+
+  const toggleComposeRecipient = (id: number) => {
+    setComposeSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const composeSelectAll = () => {
+    if (composeSelectedIds.length === filteredComposeApps.length) {
+      setComposeSelectedIds([]);
+    } else {
+      setComposeSelectedIds(filteredComposeApps.map((a) => a.id));
+    }
+  };
 
   const addManualRecipient = () => {
     if (!manualName.trim() || !manualEmail.trim()) return;
@@ -376,6 +475,71 @@ export default function CastingEmailsClient({
   };
 
   // ============================================================
+  // Send compose (template or custom)
+  // ============================================================
+
+  const handleComposeSend = async () => {
+    if (composeSelectedIds.length === 0) {
+      setResult({
+        type: "error",
+        msg: "Please select at least one recipient.",
+      });
+      return;
+    }
+    if (!composeTemplateType && (!composeSubject || !composeMessage)) {
+      setResult({
+        type: "error",
+        msg: "Please provide a subject and message, or select a template.",
+      });
+      return;
+    }
+
+    setComposeSending(true);
+    setResult(null);
+
+    try {
+      const body: Record<string, unknown> = {
+        recipientIds: composeSelectedIds,
+      };
+
+      if (composeTemplateType === "filmingReminder") {
+        body.templateType = "filmingReminder";
+        body.shootDate = shootDate || "TBD";
+        body.arrivalTime = arrivalTime || "TBD";
+        body.studio = studio;
+        body.studioMapLink = studioMapLink;
+        body.senderName = senderName;
+        body.closingSignature = closingSignature;
+      } else if (composeTemplateType) {
+        body.templateType = composeTemplateType;
+      } else {
+        body.customSubject = composeSubject;
+        body.customMessage = composeMessage;
+      }
+
+      const res = await fetch("/api/messages/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) throw new Error("Failed to send");
+      setResult({
+        type: "success",
+        msg: `Emails sent to ${composeSelectedIds.length} recipient(s)!`,
+      });
+      setComposeSelectedIds([]);
+      setComposeSubject("");
+      setComposeMessage("");
+      setComposeTemplateType("");
+    } catch {
+      setResult({ type: "error", msg: "Failed to send emails. Try again." });
+    } finally {
+      setComposeSending(false);
+    }
+  };
+
+  // ============================================================
   // Render
   // ============================================================
 
@@ -387,19 +551,28 @@ export default function CastingEmailsClient({
           Casting Email Manager
         </h1>
         <p className="text-[#615552] text-[14px]">
-          Configure and send casting invitation emails to approved applicants
+          Configure and send casting invitation emails, compose messages, and
+          view delivery history
         </p>
       </div>
 
       {/* Tab Switcher */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 flex-wrap">
         <Button
           variant={activeTab === "setup" ? "default" : "outline"}
           className={activeTab === "setup" ? "bg-[#3A2B27] text-white" : ""}
           onClick={() => setActiveTab("setup")}
         >
           <Clapperboard className="w-4 h-4 mr-2" />
-          Setup & Send
+          Casting Invite
+        </Button>
+        <Button
+          variant={activeTab === "compose" ? "default" : "outline"}
+          className={activeTab === "compose" ? "bg-[#3A2B27] text-white" : ""}
+          onClick={() => setActiveTab("compose")}
+        >
+          <Mail className="w-4 h-4 mr-2" />
+          Compose
         </Button>
         <Button
           variant={activeTab === "recipients" ? "default" : "outline"}
@@ -823,6 +996,207 @@ export default function CastingEmailsClient({
             </Card>
           )}
         </>
+      )}
+
+      {/* ============== COMPOSE TAB ============== */}
+      {activeTab === "compose" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left — Recipients + Message */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-[20px] text-[#1C1A1A] flex items-center">
+                  <Users className="w-5 h-5 mr-2" />
+                  Recipients ({composeSelectedIds.length} selected)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex gap-2 items-center">
+                  <Select
+                    value={composeCategoryFilter}
+                    onValueChange={setComposeCategoryFilter}
+                  >
+                    <SelectTrigger className="w-[200px] bg-[#FAF9F8] border-[#ECE8E4] h-[36px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {allCategories.map((cat) => (
+                        <SelectItem key={cat.id} value={String(cat.id)}>
+                          <span className="flex items-center gap-2">
+                            {cat.colorCode && (
+                              <span
+                                className="inline-block w-2.5 h-2.5 rounded-full"
+                                style={{ backgroundColor: cat.colorCode }}
+                              />
+                            )}
+                            {cat.categoryName}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={composeSelectAll}
+                  >
+                    {composeSelectedIds.length === filteredComposeApps.length &&
+                    filteredComposeApps.length > 0
+                      ? "Deselect All"
+                      : "Select All"}
+                  </Button>
+                </div>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#777676] w-4 h-4" />
+                  <Input
+                    placeholder="Search recipients..."
+                    className="pl-10 bg-[#FAF9F8] border-[#ECE8E4] h-[36px] text-[13px]"
+                    value={composeSearch}
+                    onChange={(e) => setComposeSearch(e.target.value)}
+                  />
+                </div>
+                <div className="max-h-[250px] overflow-y-auto border border-[#ECE8E4] rounded-md divide-y divide-[#ECE8E4]">
+                  {filteredComposeApps.map((app) => (
+                    <label
+                      key={app.id}
+                      className="flex items-center gap-3 p-2 hover:bg-[#FAF9F8] cursor-pointer"
+                    >
+                      <Checkbox
+                        checked={composeSelectedIds.includes(app.id)}
+                        onCheckedChange={() => toggleComposeRecipient(app.id)}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-[#1C1A1A] truncate">
+                          {app.firstName} {app.lastName}
+                        </p>
+                        <p className="text-xs text-[#777676] truncate">
+                          {app.email}
+                        </p>
+                      </div>
+                      {app.categories.length > 0 && (
+                        <div className="flex gap-1 flex-shrink-0">
+                          {app.categories.slice(0, 2).map((c) => (
+                            <span
+                              key={c.category.id}
+                              className="text-[9px] px-1.5 py-0.5 rounded bg-[#ECE8E4] text-[#615552]"
+                            >
+                              {c.category.categoryName}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </label>
+                  ))}
+                  {filteredComposeApps.length === 0 && (
+                    <p className="text-sm text-[#777676] p-4 text-center">
+                      No applicants match the filter.
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-[20px] text-[#1C1A1A] flex items-center">
+                  <Mail className="w-5 h-5 mr-2" />
+                  {composeTemplateType
+                    ? `Template: ${composeTemplates.find((t) => t.key === composeTemplateType)?.title || composeTemplateType}`
+                    : "Custom Message"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {composeTemplateType ? (
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
+                    Using template &ldquo;
+                    {
+                      composeTemplates.find(
+                        (t) => t.key === composeTemplateType,
+                      )?.title
+                    }
+                    &rdquo;. Recipients will receive personalized emails.
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="ml-2 text-blue-700 underline p-0 h-auto"
+                      onClick={() => setComposeTemplateType("")}
+                    >
+                      Use custom instead
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <Label className="text-[#777676] text-[12px] mb-1">
+                        Subject
+                      </Label>
+                      <Input
+                        className="bg-[#FAF9F8] border-[#ECE8E4] h-[42px]"
+                        placeholder="Email subject..."
+                        value={composeSubject}
+                        onChange={(e) => setComposeSubject(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[#777676] text-[12px] mb-1">
+                        Message (HTML supported)
+                      </Label>
+                      <Textarea
+                        className="bg-[#FAF9F8] border-[#ECE8E4] h-[200px]"
+                        placeholder="Type your message..."
+                        value={composeMessage}
+                        onChange={(e) => setComposeMessage(e.target.value)}
+                      />
+                    </div>
+                  </>
+                )}
+                <Button
+                  className="bg-[#3A2B27] text-white w-full h-[42px]"
+                  onClick={handleComposeSend}
+                  disabled={composeSending}
+                >
+                  {composeSending ? (
+                    "Sending..."
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Send to {composeSelectedIds.length} Recipient
+                      {composeSelectedIds.length !== 1 ? "s" : ""}
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right — Templates */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-[20px] text-[#1C1A1A]">
+                Email Templates
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {composeTemplates.map((t) => (
+                <div
+                  key={t.key}
+                  onClick={() => setComposeTemplateType(t.key)}
+                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                    composeTemplateType === t.key
+                      ? "border-[#3A2B27] bg-[#F5EEE8]"
+                      : "bg-[#FAF9F8] border-[#ECE8E4] hover:border-[#3A2B27]"
+                  }`}
+                >
+                  <h3 className="text-[14px] text-[#1C1A1A] font-semibold mb-1">
+                    {t.title}
+                  </h3>
+                  <p className="text-[12px] text-[#615552]">{t.desc}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* ============== RECIPIENT LIST TAB ============== */}

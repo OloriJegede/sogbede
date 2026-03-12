@@ -6,11 +6,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Home,
-  Users,
   Settings,
-  FileText,
   Calendar,
-  Mail,
   Clapperboard,
   LogOut,
   Loader2,
@@ -21,10 +18,7 @@ const SideMenu = ({ adminName }: { adminName?: string }) => {
   const [loggingOut, setLoggingOut] = useState(false);
   const menuItems = [
     { name: "Home", icon: Home, href: "/admin" },
-    { name: "Applicants", icon: Users, href: "/admin/applicants" },
-    { name: "Applications", icon: FileText, href: "/admin/applications" },
-    { name: "Filming Dates", icon: Calendar, href: "/admin/filming-dates" },
-    { name: "Messages", icon: Mail, href: "/admin/messages" },
+    { name: "Episode Planner", icon: Calendar, href: "/admin/filming-dates" },
     {
       name: "Casting Emails",
       icon: Clapperboard,

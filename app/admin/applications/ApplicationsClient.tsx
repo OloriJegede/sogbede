@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { useRouter } from "next/navigation";
 import TablePagination from "@/components/ui/table-pagination";
 
@@ -82,7 +82,7 @@ export default function ApplicationsClient({
   currentCategory,
 }: Props) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [search, setSearch] = useState(currentSearch);
   const [dateFrom, setDateFrom] = useState(currentDateFrom);
   const [dateTo, setDateTo] = useState(currentDateTo);
@@ -176,15 +176,15 @@ export default function ApplicationsClient({
   };
 
   return (
-    <div className="p-8 bg-[#FAF7F3] min-h-screen">
-      <div className="mb-8">
+    <div className="bg-[#FAF7F3]">
+      {/* <div className="mb-8">
         <h1 className="text-[32px] text-[#1C1A1A] montserrat-semibold mb-2">
           Applications
         </h1>
         <p className="text-[#615552] text-[14px]">
           View and manage all submitted applications
         </p>
-      </div>
+      </div> */}
 
       <Card className="mb-6">
         <CardContent className="pt-6">

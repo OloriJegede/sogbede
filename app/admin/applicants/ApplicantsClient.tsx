@@ -60,26 +60,25 @@ interface Props {
   applicants: Applicant[];
   allCategories: CategoryOption[];
   categoryCounts: Record<number, number>;
-  currentStatus: string;
   currentPartner: string;
   currentSearch: string;
   currentCategory: string;
+  basePath?: string;
 }
 
 export default function ApplicantsClient({
   applicants,
   allCategories,
   categoryCounts,
-  currentStatus,
   currentPartner,
   currentSearch,
   currentCategory,
+  basePath = "/admin",
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState(currentSearch);
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [categoryUpdatingId, setCategoryUpdatingId] = useState<string | null>(
     null,
   );
@@ -128,8 +127,6 @@ export default function ApplicantsClient({
 
   const updateFilters = (key: string, value: string) => {
     const params = new URLSearchParams();
-    if (key === "status") params.set("status", value);
-    else if (currentStatus !== "all") params.set("status", currentStatus);
 
     if (key === "partner") params.set("partner", value);
     else if (currentPartner !== "all") params.set("partner", currentPartner);
@@ -142,7 +139,7 @@ export default function ApplicantsClient({
     } else if (currentCategory !== "all")
       params.set("category", currentCategory);
 
-    navigate(`/admin/applicants?${params.toString()}`);
+    navigate(`${basePath}?${params.toString()}`);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -150,30 +147,16 @@ export default function ApplicantsClient({
     updateFilters("search", search);
   };
 
-  const updateStatus = async (id: number, status: string) => {
-    setUpdatingId(id);
-    try {
-      await fetch(`/api/applications/${id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-      router.refresh();
-    } finally {
-      setUpdatingId(null);
-    }
-  };
-
   return (
-    <div className="p-8 bg-[#FAF7F3] min-h-screen">
-      <div className="mb-8">
+    <div className="bg-[#FAF7F3]">
+      {/* <div className="mb-8">
         <h1 className="text-[32px] text-[#1C1A1A] montserrat-semibold mb-2">
           Applicants
         </h1>
         <p className="text-[#615552] text-[14px]">
           Manage all SoGbédè applications
         </p>
-      </div>
+      </div> */}
 
       <Card className="mb-6">
         <CardContent className="pt-6">
@@ -190,20 +173,6 @@ export default function ApplicantsClient({
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <Select
-              defaultValue={currentStatus}
-              onValueChange={(v) => updateFilters("status", v)}
-            >
-              <SelectTrigger className="w-full md:w-[180px] bg-[#FAF9F8] border-[#ECE8E4] h-[42px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
-              </SelectContent>
-            </Select>
             <Select
               defaultValue={currentPartner}
               onValueChange={(v) => updateFilters("partner", v)}
@@ -413,45 +382,22 @@ export default function ApplicantsClient({
                               </div>
                             )}
                           </div>
-                          <div className="flex gap-2 mt-4">
-                            {applicant.status !== "approved" && (
-                              <Button
-                                size="sm"
-                                className="bg-green-600 text-white hover:bg-green-700"
-                                disabled={updatingId === applicant.id}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateStatus(applicant.id, "approved");
-                                }}
-                              >
-                                Approve
-                              </Button>
-                            )}
-                            {applicant.status !== "rejected" && (
-                              <Button
-                                size="sm"
-                                className="bg-red-600 text-white hover:bg-red-700"
-                                disabled={updatingId === applicant.id}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateStatus(applicant.id, "rejected");
-                                }}
-                              >
-                                Reject
-                              </Button>
-                            )}
-                            {applicant.status !== "pending" && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                disabled={updatingId === applicant.id}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateStatus(applicant.id, "pending");
-                                }}
-                              >
-                                Set Pending
-                              </Button>
+                          <div className="flex gap-2 mt-4 flex-wrap">
+                            {applicant.categories.length > 0 && (
+                              <div className="flex gap-1 flex-wrap">
+                                {applicant.categories.map((ac) => (
+                                  <span
+                                    key={ac.category.id}
+                                    className="px-2 py-0.5 rounded text-xs text-white"
+                                    style={{
+                                      backgroundColor:
+                                        ac.category.colorCode || "#3b82f6",
+                                    }}
+                                  >
+                                    {ac.category.categoryName}
+                                  </span>
+                                ))}
+                              </div>
                             )}
                           </div>
 

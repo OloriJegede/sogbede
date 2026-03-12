@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
             : `Hello ${recipient.name}`,
           senderName: senderName || "",
           closingSignature:
-            closingSignature || "Ẹ ṣeun lójúlọ́jú,\nThe ṢoGbédè Team",
+            closingSignature || "Ẹ ṣeun lọ́pọ̀lọpọ̀,\nThe ṢoGbédè Team",
         });
 
         const result = await sendEmail({

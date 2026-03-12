@@ -60,15 +60,93 @@ export const emailTemplates = {
     `,
   }),
 
-  filmingReminder: (name: string, filmingDate: string, location: string) => ({
-    subject: "Filming Date Reminder - SoGbédè",
-    html: `
-      <h1>Hello ${name},</h1>
-      <p>This is a reminder about your upcoming filming session:</p>
-      <p><strong>Date:</strong> ${filmingDate}</p>
-      <p><strong>Location:</strong> ${location}</p>
-      <p>Please arrive 15 minutes early.</p>
-    `,
+  filmingReminder: ({
+    name,
+    shootDate,
+    arrivalTime,
+    studio,
+    studioMapLink,
+    senderName,
+    closingSignature,
+  }: {
+    name: string;
+    shootDate: string;
+    arrivalTime: string;
+    studio: string;
+    studioMapLink: string;
+    senderName: string;
+    closingSignature: string;
+  }) => ({
+    subject: "Filming Day Reminder - ṢoGbédè",
+    html: `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F5F2EE;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F2EE;padding:24px 16px;">
+<tr><td align="center">
+<table width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%;background:#FDFCFB;border-radius:4px;overflow:hidden;">
+
+<!-- Header -->
+<tr><td style="background:#1C1A1A;padding:20px 28px;">
+  <p style="color:#fff;margin:0;font-size:18px;font-weight:700;letter-spacing:1px;">ṢoGbédè</p>
+  <p style="color:#aaa;margin:4px 0 0;font-size:12px;">Casting Team - ORIIA Studios</p>
+</td></tr>
+
+<!-- Body -->
+<tr><td style="padding:32px 28px;background:#FDFCFB;">
+  <h2 style="font-size:24px;font-weight:700;color:#1C1A1A;margin:0 0 16px;line-height:1.2;">Filming Day Reminder</h2>
+
+  <p style="font-size:14px;color:#333;margin:0 0 20px;line-height:1.7;">
+    Hello <strong>${name}</strong>, this is a friendly reminder that your filming day for ṢoGbédè is coming up! We can't wait to see you.
+  </p>
+
+  <!-- Details Card -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E0DBD5;border-radius:4px;margin:0 0 24px;">
+  <tr><td style="padding:16px 20px;">
+    <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong>Arrival Time:</strong> ${arrivalTime}</p>
+    <p style="margin:0 0 8px;font-size:13px;color:#333;"><strong>Date:</strong> ${shootDate}</p>
+    <p style="margin:0;font-size:13px;color:#333;"><strong>Studio:</strong> ${studioMapLink ? `<a href="${studioMapLink}" style="color:#3A2B27;font-weight:600;">${studio} (Open in Google Maps)</a>` : studio}</p>
+  </td></tr>
+  </table>
+
+  <p style="font-size:14px;font-weight:700;color:#1C1A1A;margin:0 0 12px;">Quick Reminders:</p>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E0DBD5;border-radius:4px;margin:0 0 8px;">
+  <tr><td style="padding:14px 18px;">
+    <p style="font-size:13px;color:#333;margin:0;line-height:1.6;"><strong>Arrive on time</strong> — your full experience will last approximately two hours.</p>
+  </td></tr>
+  </table>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#C9B49A;border-radius:4px;margin:0 0 8px;">
+  <tr><td style="padding:14px 18px;">
+    <p style="font-size:13px;color:#1C1A1A;margin:0;line-height:1.6;"><strong>Dress to impress</strong> — honor Yoruba pride. You'll be shown from head to toe.</p>
+  </td></tr>
+  </table>
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E0DBD5;border-radius:4px;margin:0 0 24px;">
+  <tr><td style="padding:14px 18px;">
+    <p style="font-size:13px;color:#333;margin:0;line-height:1.6;"><strong>Bring your energy</strong> — you and your teammate can win up to $2,000!</p>
+  </td></tr>
+  </table>
+
+  <p style="font-size:14px;color:#555;margin:0 0 20px;line-height:1.7;">
+    We're looking forward to an amazing day celebrating Yoruba culture. See you soon!
+  </p>
+
+  <p style="font-size:14px;color:#555;margin:0 0 4px;line-height:1.6;">${closingSignature || "Ẹ seun lórpòlopò,"}</p>
+  ${senderName ? `<p style="font-size:14px;color:#555;margin:0;line-height:1.6;">${senderName}</p>` : ""}
+</td></tr>
+
+<!-- Footer -->
+<tr><td style="background:#F5F2EE;padding:16px 28px;border-top:1px solid #E0DBD5;">
+  <p style="margin:0;font-size:11px;color:#999;text-align:center;">© ${new Date().getFullYear()} ṢoGbédè. All rights reserved.</p>
+</td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`,
   }),
 
   castingInvite: ({

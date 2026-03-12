@@ -3,19 +3,21 @@ export const dynamic = "force-dynamic";
 import React from "react";
 import { FileText, Clock, CalendarDays, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { db } from "@/lib/db";
-import Link from "next/link";
+import ApplicantsClient from "./applicants/ApplicantsClient";
 
-export default async function DashboardPage() {
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function DashboardPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const partner =
+    typeof params.partner === "string" ? params.partner : undefined;
+  const search = typeof params.search === "string" ? params.search : undefined;
+  const category =
+    typeof params.category === "string" ? params.category : undefined;
+
   const now = new Date();
   const startOfToday = new Date(
     now.getFullYear(),
@@ -25,26 +27,61 @@ export default async function DashboardPage() {
   const startOfWeek = new Date(startOfToday);
   startOfWeek.setDate(startOfToday.getDate() - startOfToday.getDay());
 
-  const [totalCount, pendingCount, todayCount, thisWeekCount, recentApps] =
-    await Promise.all([
-      db.application.count(),
-      db.application.count({ where: { status: "pending" } }),
-      db.application.count({ where: { createdAt: { gte: startOfToday } } }),
-      db.application.count({ where: { createdAt: { gte: startOfWeek } } }),
-      db.application.findMany({
-        take: 5,
-        orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          mediaUrl: true,
-          createdAt: true,
-          status: true,
+  const where: Record<string, unknown> = {};
+
+  if (partner === "yes") {
+    where.partnerFirstName = { not: null };
+  } else if (partner === "no") {
+    where.partnerFirstName = null;
+  }
+
+  if (search) {
+    where.OR = [
+      { firstName: { contains: search } },
+      { lastName: { contains: search } },
+      { email: { contains: search } },
+      { phone: { contains: search } },
+    ];
+  }
+
+  if (category && category !== "all") {
+    where.categories = {
+      some: { categoryId: parseInt(category) },
+    };
+  }
+
+  const [
+    totalCount,
+    pendingCount,
+    todayCount,
+    thisWeekCount,
+    applicants,
+    allCategories,
+    allCategoryLinks,
+  ] = await Promise.all([
+    db.application.count(),
+    db.application.count({ where: { status: "pending" } }),
+    db.application.count({ where: { createdAt: { gte: startOfToday } } }),
+    db.application.count({ where: { createdAt: { gte: startOfWeek } } }),
+    db.application.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: {
+        visibility: true,
+        categories: {
+          include: { category: true },
         },
-      }),
-    ]);
+      },
+    }),
+    db.category.findMany({ orderBy: { sortOrder: "asc" } }),
+    db.applicationCategory.findMany(),
+  ]);
+
+  const categoryCounts: Record<number, number> = {};
+  for (const link of allCategoryLinks) {
+    categoryCounts[link.categoryId] =
+      (categoryCounts[link.categoryId] || 0) + 1;
+  }
 
   const stats = [
     {
@@ -105,105 +142,15 @@ export default async function DashboardPage() {
         })}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-[20px] text-[#1C1A1A]">
-            Recent Applications
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-[12px] font-semibold text-[#615552] w-[60px]">
-                  Photo
-                </TableHead>
-                <TableHead className="text-[12px] font-semibold text-[#615552]">
-                  Name
-                </TableHead>
-                <TableHead className="text-[12px] font-semibold text-[#615552]">
-                  Email
-                </TableHead>
-                <TableHead className="text-[12px] font-semibold text-[#615552]">
-                  Date
-                </TableHead>
-                <TableHead className="text-[12px] font-semibold text-[#615552]">
-                  Status
-                </TableHead>
-                <TableHead className="text-[12px] font-semibold text-[#615552]">
-                  Action
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentApps.map((app) => (
-                <TableRow key={app.id} className="hover:bg-[#FAF9F8]">
-                  <TableCell>
-                    {app.mediaUrl ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
-                        src={app.mediaUrl}
-                        alt={`${app.firstName} ${app.lastName}`}
-                        className="w-9 h-9 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-9 h-9 rounded-full bg-[#3A2B27] flex items-center justify-center text-white text-xs font-semibold">
-                        {app.firstName[0]}
-                        {app.lastName[0]}
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-[14px] text-[#1C1A1A]">
-                    {app.firstName} {app.lastName}
-                  </TableCell>
-                  <TableCell className="text-[14px] text-[#615552]">
-                    {app.email}
-                  </TableCell>
-                  <TableCell className="text-[14px] text-[#615552]">
-                    {app.createdAt
-                      ? new Date(app.createdAt).toLocaleDateString()
-                      : "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded text-[12px] capitalize ${
-                        app.status === "approved"
-                          ? "bg-green-100 text-green-700"
-                          : app.status === "rejected"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {app.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Link href={`/admin/applicants`}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-[#3A2B27]"
-                      >
-                        View
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {recentApps.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center text-[14px] text-[#615552] py-8"
-                  >
-                    No applications yet.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <ApplicantsClient
+        applicants={JSON.parse(JSON.stringify(applicants))}
+        allCategories={JSON.parse(JSON.stringify(allCategories))}
+        categoryCounts={categoryCounts}
+        currentPartner={partner || "all"}
+        currentSearch={search || ""}
+        currentCategory={category || "all"}
+        basePath="/admin"
+      />
     </div>
   );
 }

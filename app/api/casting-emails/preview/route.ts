@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         : `Hello ${sampleName || "John Doe"}`,
       senderName: senderName || "",
       closingSignature:
-        closingSignature || "Ẹ ṣeun lójúlọ́jú,\nThe ṢoGbédè Team",
+        closingSignature || "Ẹ ṣeun lọ́pọ̀lọpọ̀,\nThe ṢoGbédè Team",
     });
 
     return NextResponse.json({ html: templateData.html });

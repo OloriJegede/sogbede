@@ -48,7 +48,7 @@ export default function AddContestantDialog({
   const [open, setOpen] = useState(false);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [readyToShineOnly, setReadyToShineOnly] = useState(false);
+  const [readyToShineOnly, setReadyToShineOnly] = useState(true);
   const [loadingApplicants, setLoadingApplicants] = useState(false);
   const [addingId, setAddingId] = useState<number | null>(null);
   const [error, setError] = useState("");
