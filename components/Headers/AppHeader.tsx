@@ -9,7 +9,7 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/#about" },
   { label: "Sign up", href: "/apply" },
-  { label: "KíLOWí", href: "/", bold: true },
+  { label: "KíLOWí", href: "https://kilowi.netlify.app", bold: true, external: true },
   { label: "FAQ", href: "/#faq" },
 ];
 
@@ -37,6 +37,8 @@ const AppHeader = () => {
                   <Link
                     key={link.label}
                     href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
                     className={link.bold ? "font-bold" : ""}
                   >
                     {link.label}
@@ -81,6 +83,8 @@ const AppHeader = () => {
               <Link
                 key={link.label}
                 href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
                 onClick={() => setMenuOpen(false)}
                 className={`text-[18px] text-[#1C1A1A] ${link.bold ? "font-bold" : ""}`}
               >
