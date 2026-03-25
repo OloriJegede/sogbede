@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 const ContactUs = () => {
   return (
@@ -14,7 +15,7 @@ const ContactUs = () => {
             soon as possible.
           </div>
           <div className="flex justify-center items-center">
-            <Button className="px-8">Contact Us</Button>
+            <Button asChild className="px-8"><Link href={`/#foot`}>Contact Us</Link></Button>
           </div>
         </div>
       </div>

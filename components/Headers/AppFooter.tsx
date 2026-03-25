@@ -4,7 +4,7 @@ import React from "react";
 
 const AppFooter = () => {
   return (
-    <div className="bg-[#3A2B27] text-[#FAFAFA] py-20">
+    <div id="foot" className="bg-[#3A2B27] text-[#FAFAFA] py-20">
       <div className="max-w-7xl mx-auto px-6 md:px-0">
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-b border-[#CCAB8C] pb-20">
           <div className="space-y-5">
