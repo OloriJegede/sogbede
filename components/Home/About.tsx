@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 const About = () => {
   return (
@@ -37,8 +38,8 @@ const About = () => {
                 fun.
               </div>
             </div>
-            <Button className="bg-[#CCAB8C] text-[#3A2B27] px-10">
-              Join in the fun{" "}
+            <Button asChild className="bg-[#CCAB8C] text-[#3A2B27] px-10">
+              <Link href={`/apply`}>Join in the fun{" "}</Link>
             </Button>
           </div>
           <div className="hidden md:block">

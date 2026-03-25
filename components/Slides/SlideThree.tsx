@@ -15,9 +15,13 @@ const SlideThree = () => {
       <div className="text-[16px] md:text-[24px] text-center px-4 md:px-0 mb-18">
         See episodes, highlights and cultural moments from the show
       </div>
-      <div>
+      <a
+         href="https://www.youtube.com/@sogbede"
+                  target="_blank"
+                  rel="noopener noreferrer"
+      >
         <Button className="px-8 bg-[#1C1A1A]">Watch on Youtube</Button>
-      </div>
+      </a>
       <div className="flex justify-center items-center mt-5 md:-mt-12">
         <Image
           src={`/slide3.png`}

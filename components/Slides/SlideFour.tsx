@@ -16,7 +16,12 @@ const SlideFour = () => {
         Kílowí brings Yoruba wordplay to your table in the form of a card game
       </div>
       <div>
-        <Button className="px-8 bg-[#008000]">Get Kílowí</Button>
+        <a
+        href="https://kilowi.netlify.app"
+        target="_blank"
+        rel="noopener noreferrer"
+      ><Button className="px-8 bg-[#008000]">Get Kílowí</Button></a>
+        
       </div>
       <div className="flex justify-center items-center">
         <Image

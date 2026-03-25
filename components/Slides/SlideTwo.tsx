@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 const SlideTwo = () => {
   return (
@@ -16,9 +17,11 @@ const SlideTwo = () => {
         Show off your Yoruba language skills and win big while having fun!
       </div>
       <div>
-        <Button className="px-8 bg-[#CCAB8C]">Apply Now</Button>
+        <Button asChild className="px-8 bg-[#CCAB8C]">
+          <Link href={`/apply`}>Apply Now</Link>
+        </Button>
       </div>
-      <div className="flex justify-center md:mt-4 items-center pt-2 w-full">
+      <div className="flex justify-center md:mt-4 items-center pt-4 w-full">
         <Image
           src={`/slide2.png`}
           width={1154}

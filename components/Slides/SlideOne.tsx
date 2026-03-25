@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 const SlideOne = () => {
   return (
@@ -11,10 +12,12 @@ const SlideOne = () => {
         <div className="text-[16px] md:text-[24px] text-center md:px-0">
           Regardless of your Yoruba level, you are welcome to play this game.
         </div>
-        <Button className="px-8 w-[138px] w-auto">Explore ṢoGbédè</Button>
+        <Button asChild className="px-8 w-[138px] w-auto">
+          <Link href={`/#about`}>Explore ṢoGbédè</Link>
+        </Button>
       </div>
       {/* Bottom image */}
-      <div className="w-full ">
+      <div className="w-full pt-4">
         <Image
           src={`/5hero1.png`}
           width={1154}

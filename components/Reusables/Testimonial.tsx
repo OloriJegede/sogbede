@@ -11,7 +11,7 @@ const Testimonial = ({ name, location, feedback }: TestimonialProps) => {
   const initial = name.charAt(0).toUpperCase();
 
   return (
-    <div className="bg-[url('/card3.svg')] rounded-[16px] px-5 py-6  w-full max-w-[420px] h-[240px]">
+    <div className="bg-[url('/card3.svg')] rounded-[16px] px-5 py-6  w-full max-w-[420px] h-[260px]">
       <div className="flex justify-start items-start space-x-4">
         <div className="w-[40px] h-[40px] rounded-full bg-[#DBC4AF] flex justify-center items-center text-[#FAFAFA] text-[16px] montserrat-bold">
           {initial}

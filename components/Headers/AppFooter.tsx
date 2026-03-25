@@ -38,7 +38,7 @@ const AppFooter = () => {
               <div className="text-[24px] montserrat-semibold">Quick Links</div>
               <div className="space-y-5 text-[#FAF7F3]">
                 <div>
-                  <Link href={`/appy`}>Apply Now</Link>
+                  <Link href={`/apply`}>Apply Now</Link>
                 </div>
                 <div>
                   <Link href={`/#faq`}>FAQ</Link>
@@ -60,28 +60,44 @@ const AppFooter = () => {
                 Follow Our Journey
               </div>
               <div className="flex justify-start items-center space-x-3 pt-6">
-                <Link href={`/`}>
+                <a
+                  href="https://www.instagram.com/so.gbede"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Image
                     src={`/ig.svg`}
                     width={24}
                     height={24}
                     alt="instagram"
                   />
-                </Link>
-                <Link href={`/`}>
+                </a>
+                <a
+                  href="https://www.facebook.com/share/1BFzfvS9bi/?mibextid=wwXIfr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Image
                     src={`/fb.svg`}
                     width={24}
                     height={24}
                     alt="facebook"
                   />
-                </Link>
-                <Link href={`/`}>
+                </a>
+                <a
+                  href="https://x.com/eresogbede"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Image src={`/x.svg`} width={24} height={24} alt="twitter" />
-                </Link>
-                <Link href={`/`}>
+                </a>
+                <a
+                  href="https://www.youtube.com/@sogbede"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Image src={`/yt.svg`} width={24} height={24} alt="youtube" />
-                </Link>
+                </a>
               </div>
             </div>
           </div>
