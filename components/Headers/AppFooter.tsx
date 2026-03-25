@@ -38,7 +38,7 @@ const AppFooter = () => {
               <div className="text-[24px] montserrat-semibold">Quick Links</div>
               <div className="space-y-5 text-[#FAF7F3]">
                 <div>
-                  <Link href={`/apply`}>Apply Now</Link>
+                  <Link href={`/apply`}>Sign up</Link>
                 </div>
                 <div>
                   <Link href={`/#faq`}>FAQ</Link>

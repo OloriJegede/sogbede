@@ -18,7 +18,7 @@ const SlideTwo = () => {
       </div>
       <div>
         <Button asChild className="px-8 bg-[#CCAB8C]">
-          <Link href={`/apply`}>Apply Now</Link>
+          <Link href={`/apply`}>Sign up</Link>
         </Button>
       </div>
       <div className="flex justify-center md:mt-4 items-center pt-4 w-full">

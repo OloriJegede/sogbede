@@ -199,7 +199,7 @@ export default function ApplyPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Orúkọ Àkọ́kọ́ (First Name) *
                 </Label>
                 <Input
@@ -209,7 +209,7 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Orúkọ Ìdílé (Last Name) *
                 </Label>
                 <Input
@@ -219,7 +219,7 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Ímeèlì (Email) *
                 </Label>
                 <Input
@@ -230,7 +230,7 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Ẹ̀rọ Ìbánisọ̀rọ̀ (Phone Number) *
                 </Label>
                 <Input
@@ -241,7 +241,7 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Ìlú (City) *
                 </Label>
                 <Input
@@ -251,7 +251,7 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Ìpínlẹ̀ (State) *
                 </Label>
                 <Input
@@ -261,7 +261,7 @@ export default function ApplyPage() {
                 />
               </div>
               <div className="md:col-span-2">
-                <Label className=" text-[#777676] text-[12px] mb-1">
+                <Label className=" text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Orílẹ̀-èdè (Country) *
                 </Label>
                 <Input
@@ -278,7 +278,7 @@ export default function ApplyPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Ọjọ́ Orí (Age) *
                 </Label>
                 <Input
@@ -289,7 +289,7 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Iṣẹ́ (Occupation)
                 </Label>
                 <Input
@@ -301,7 +301,7 @@ export default function ApplyPage() {
             </div>
             <div className="pt-5">
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Àwòrán Ara Rẹ (Upload Photo/Video)
                 </Label>
                 <input
@@ -327,10 +327,10 @@ export default function ApplyPage() {
                 </Button>
               </div>
             </div>
-            <div className="text-[#777676] text-[12px] mt-5">
+            <div className="text-[#1C1A1A] text-[12px] mt-5 montserrat-semibold">
               Sọ fún wa nípa ohun tí o fẹ́ràn. Ohunkóhun. *
             </div>
-            <Label className="text-[#777676] text-[12px] mb-2">
+            <Label className="text-[#1C1A1A] text-[12px] mb-2 montserrat-semibold">
               Tell us about your interests, hobbies, passions, or what makes you
               unique. We want to know you.
             </Label>
@@ -345,7 +345,7 @@ export default function ApplyPage() {
               Partner Information
             </div>
             <div className="mb-3">
-              <Label className="text-[#777676] text-[12px] mb-1">
+              <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                 Are you coming with a partner? *
               </Label>
               <RadioGroup
@@ -357,7 +357,7 @@ export default function ApplyPage() {
                   <RadioGroupItem value="yes" id="partner-yes" />
                   <label
                     htmlFor="partner-yes"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="text-sm montserrat-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
                     Yes
                   </label>
@@ -366,7 +366,7 @@ export default function ApplyPage() {
                   <RadioGroupItem value="no" id="partner-no" />
                   <label
                     htmlFor="partner-no"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="text-sm montserrat-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
                     No
                   </label>
@@ -376,7 +376,7 @@ export default function ApplyPage() {
             {form.hasPartner === "yes" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                 <div>
-                  <Label className="text-[#777676] text-[12px] mb-1">
+                  <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                     Partner First Name
                   </Label>
                   <Input
@@ -386,7 +386,7 @@ export default function ApplyPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-[#777676] text-[12px] mb-1">
+                  <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                     Partner Last Name
                   </Label>
                   <Input
@@ -404,7 +404,7 @@ export default function ApplyPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Instagram Handle
                 </Label>
                 <Input
@@ -415,7 +415,7 @@ export default function ApplyPage() {
                 />
               </div>
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   TikTok Handle
                 </Label>
                 <Input
@@ -431,7 +431,7 @@ export default function ApplyPage() {
             <div className="text-[#1C1A1A] text-[32px] montserrat-semibold mb-4">
               Additional Notes
             </div>
-            <Label className="text-[#777676] text-[12px] mb-2">
+            <Label className="text-[#1C1A1A] text-[12px] mb-2 montserrat-semibold">
               Anything else you&apos;d like us to know?
             </Label>
             <Textarea
@@ -446,7 +446,7 @@ export default function ApplyPage() {
             </div>
             <div className="pt-2">
               <div>
-                <Label className="text-[#777676] text-[12px] mb-1">
+                <Label className="text-[#1C1A1A] text-[12px] mb-1 montserrat-semibold">
                   Ọjọ́ tí o fẹ́ kópa (Preferred Filming Date) *
                 </Label>
                 <select
